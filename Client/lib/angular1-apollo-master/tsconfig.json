@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "declaration": true,
+    "rootDir": ".",
+    "outDir": "build",
+    "noImplicitAny": false,
+    "lib": ["es6", "dom"]
+  },
+  "files": [
+    "src/index.ts"
+   ]
+}

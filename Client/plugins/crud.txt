@@ -1,0 +1,43 @@
+                 read: function(ql) {
+                    APIKEY = init(APIKEY);
+                    var query = parseQuery(ql);
+                    if (query) {
+                        var networkInterface = createNetworkInterface({
+                            uri: "http://66.70.189.237/" + APIKEY.user + "/" + APIKEY.project + "/" + APIKEY.role + "/prod"
+                        })
+
+                        const client = new ApolloClient({
+                            networkInterface
+                        });
+                        apollo.defaultClient(client);
+                        return apollo.query({
+                                query: gql(query)
+                            })
+                            .then(result => {
+                                return (result);
+                            })
+                            .catch(error => {
+                                return error
+                            });
+                    } else {
+                        return "Query/Token not available";
+                    }
+                }, 
+                create: function(ql) {
+                    APIKEY = init(APIKEY);
+                    var query = parseCreateMutation(ql)
+                    var headers = getHeaders(ql);
+                    return mutation(query, headers);
+                },
+                update: function(ql) {
+                    APIKEY = init(APIKEY);
+                    var headers = getHeaders(ql);
+                    var query = parseupdateMutation(ql.query)
+                    return mutation(query, headers);
+                },
+                delete: function(ql) {
+                    APIKEY = init(APIKEY);
+                    var headers = getHeaders(ql);
+                    var query = parsedeleteMutation(ql)
+                    return mutation(query, headers);
+                },
