@@ -4,7 +4,7 @@
   "description": "generating graphql schema manually",
   "main": "index.js",
   "scripts": {
-    "start":"nodemon index.js && webpack -w",
+    "start":"node index.js && webpack -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
