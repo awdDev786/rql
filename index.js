@@ -97,8 +97,8 @@ app.post('/plugin/template', function(req, res) {
                     console.log(err);
                 }
                 else {
-                    console.log("directory created");
-               res.status(200).json("tempalte created");;
+                   // console.log("directory created");
+               res.status(200).json("tempalte created");
                 }
             })
 
@@ -106,7 +106,7 @@ app.post('/plugin/template', function(req, res) {
     });
 });
 
-app.listen(8081, (err) => {
+app.listen(80, (err) => {
     if (err) {
         throw err;
     }
