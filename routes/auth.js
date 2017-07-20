@@ -26,12 +26,43 @@ Router.post('/login', function(req, res) {
                         token: token,
                         user: user
                     });
-               }
+                }
             });
         }
     });
 });
-
+Router.post('/changePassword', function(req, res) {
+    User.findOne({ email: req.body.email }, function(err, user) {
+        if (!user) {
+            return res.send({ message: false });
+        } else {
+            user.password=req.body.password;
+            user.save(function(err){
+                if(err){
+                    res.send({status:0})
+                }
+                else{
+                    res.send({status:1})
+                }
+            });
+        }
+    })
+});
+Router.post('/password', function(req, res) {
+    User.findOne({ email: req.body.email }, function(err, user) {
+        if (!user) {
+            return res.send({ message: false });
+        } else {
+            user.comparePassword(req.body.password, function(err, isMatch) {
+                if (!isMatch) {
+                    return res.send({ message:false });
+                } else {
+                    return res.send({ message:true });
+                }
+            })
+        }
+    })
+});
 Router.post('/signup', function(req, res) {
     User.findOne({ email: req.body.email }, function(err, existingUser) {
         if (err) {
@@ -52,10 +83,10 @@ Router.post('/signup', function(req, res) {
                 var token = jwt.sign(result, 'RQLSecret', {
                     expiresIn: 60 * 60 * 24 // expires in 24 hours
                 });
-                mkdirp('./Users/'+result.url+'/', function(err) {
+                mkdirp('./Users/' + result.url + '/', function(err) {
                     if (err) {
                         return console.error(err);
-                    } else{
+                    } else {
                         console.log("directory created");
                     }
                 });
