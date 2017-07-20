@@ -84,50 +84,6 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider) {
                 });
         };
     })
-    /* .controller('projectCtrl', function($scope, $state, $stateParams, $auth, toastr, $http, $localStorage, $rql) {
-         $scope.q;
-         $scope.sendQuery = function(q) {
-             $rql.read(q, {
-                     token: $auth.getToken(),
-                     uri: 'http://localhost:3001/' + $localStorage.user.url
-                 })
-                 .then(function(res) {
-                     console.log(res);
-                     $scope.data = JSON.stringify(res);
-                 });
-         }
-         $scope.sendMutation = function(q) {
-             $rql.create(q, {
-                     token: $auth.getToken(),
-                     uri: 'http://localhost:3001/' + $localStorage.user.url + '/' + $stateParams.id
-                 })
-                 .then(function(res) {
-                     console.log(res);
-                     $scope.data = JSON.stringify(res);
-                 });
-         }
-         $scope.sendupdate = function(q) {
-             $rql.update(q, {
-                     token: $auth.getToken(),
-                     uri: 'http://localhost:3001/' + $localStorage.user.url + '/' + $stateParams.id
-                 })
-                 .then(function(res) {
-                     console.log(res);
-                     $scope.data = JSON.stringify(res);
-                 });
-         }
-         $scope.senddelete = function(q) {
-             $rql.delete(q, {
-                     token: $auth.getToken(),
-                     uri: 'http://localhost:3001/' + $localStorage.user.url + '/' + $stateParams.id
-                 })
-                 .then(function(res) {
-                     console.log(res);
-                     $scope.data = JSON.stringify(res);
-                 });
-         }
-     })
-    */
     .controller('HomeCtrl',
         function($scope, $state, $localStorage, $location, $auth, toastr, $http, $rootScope) {
             $(document).on('click', '.clickable', function(e) {
@@ -141,7 +97,66 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider) {
                     $this.removeClass('panel-collapsed');
                     $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
                 }
+                
             })
+            $(document).on('click', '.clickable1', function(e) {
+                var $this = $(this);
+                if (!$this.hasClass('pan-collapsed')) {
+                    $this.parents('.pan').find('.pb').slideUp();
+                    $this.addClass('pan-collapsed');
+                    $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+                } else {
+                    $this.parents('.pan').find('.pb').slideDown();
+                    $this.removeClass('pan-collapsed');
+                    $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+                }
+                
+            })
+            /************/
+            $scope.onBlur = function(pass) {
+                $http({
+                    method: 'post',
+                    url: "/auth/password",
+                    data: { password: pass, email: $localStorage.user.email }
+                }).success(function(data) {
+                    if (data.message == true) {
+                        $scope.wrong = false;
+                    } else {
+                        $scope.wrong = true;
+                    }
+                }).error(function(data) {
+                   $scope.wrong = true;
+                });
+            }
+            $scope.match = function(p1, p2) {
+                if(p1==p2){
+                    $scope.correct=false;
+                    if($scope.wrong==false){
+                        $scope.save=true;
+                    }
+                }
+                else{
+                    $scope.correct=true;
+                }
+                
+            }
+            $scope.changePass=function(pass){
+                  $http({
+                    method: 'post',
+                    url: "/auth/changePassword",
+                    data: { password: pass, email: $localStorage.user.email }
+                }).success(function(data) {
+                    if(data.status==1){
+                    $('#password').modal('hide');
+                }
+                else{
+                    $scope.no=true;
+                }
+                }).error(function(data) {
+                   
+                });
+            }
+            /************/
             $http({
                 method: 'get',
                 url: "/auth/me"
@@ -371,25 +386,25 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider) {
 
                                     data = data.replace('OPT:"OPTS"', opts);
                                     $http({
-                                                        method: 'post',
-                                                        url: "/plugin/template",
-                                                        data: {
-                                                            data: data
-                                                        }
-                                                    }).success(function(r) {
-                                                        $http.get('../sdk/dist/rql.bundle.js')
-                                                            .then(function(d) {
+                                        method: 'post',
+                                        url: "/plugin/template",
+                                        data: {
+                                            data: data
+                                        }
+                                    }).success(function(r) {
+                                        $http.get('../sdk/dist/rql.bundle.js')
+                                            .then(function(d) {
 
-                                                                var blob = new Blob([d.data], {
-                                                                    type: "application/json;charset=utf-8;"
-                                                                });
-                                                                var downloadLink = document.createElement('a');
-                                                                downloadLink.setAttribute('download', 'rql.min.js');
-                                                                downloadLink.setAttribute('href', window.URL.createObjectURL(blob));
-                                                                downloadLink.click();
-                                                            });
-                                                    })
-                                    
+                                                var blob = new Blob([d.data], {
+                                                    type: "application/json;charset=utf-8;"
+                                                });
+                                                var downloadLink = document.createElement('a');
+                                                downloadLink.setAttribute('download', 'rql.min.js');
+                                                downloadLink.setAttribute('href', window.URL.createObjectURL(blob));
+                                                downloadLink.click();
+                                            });
+                                    })
+
                                 }
 
                                 /*----------------------*/
@@ -415,7 +430,21 @@ app.config(function($stateProvider, $urlRouterProvider, $authProvider) {
             }
             projects();
         })
-//  function firebaseConfigObj(r){for(var i=r.split("\n"),n={},f=4;10>f;f++){var t=i[f].split(":");n[t[0]]=t[1]}return n}
+    .directive('pwCheck', [function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, elem, attrs, ctrl) {
+                var firstPassword = '#' + attrs.pwCheck;
+                elem.add(firstPassword).on('keyup', function() {
+                    scope.$apply(function() {
+                        // console.info(elem.val() === $(firstPassword).val());
+                        ctrl.$setValidity('pwmatch', elem.val() === $(firstPassword).val());
+                    });
+                });
+            }
+        }
+    }]);
+
 function firebaseConfigObj(i) {
     for (var r = i.split("\n"), t = {}, l = 4; 10 > l; l++) {
         var s = r[l].split(":");
