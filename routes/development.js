@@ -289,7 +289,7 @@ Router.post('/:project/:role/dev', function(req, res) {
             var otm = schemaObj.otm;
             var mtm = schemaObj.mtm_pairs;
             //var mtm = schemaObj.mtm; //break into one to many (keep both implementations)
-            if (pr.datasource == 'mongo') {
+            if (pr.datasource == 'MongoDB') {
                 var i = 0;
                 customLoop(i);
 
