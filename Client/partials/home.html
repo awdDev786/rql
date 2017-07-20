@@ -1,101 +1,160 @@
 <div class="col-lg-12">
-    <div class="panel panel-default">
+    <div class="panel panel-info">
         <div class="panel-heading ">
-            <h3>{{user.url}}</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>RQL: REST Query Language</h4>
+                </div>
+                <div class="col-md-6 pull-right profile ">
+                    <span class="text-left">Welcome&nbsp<em>{{user.url}}</em></span>
+                    <span class="text-center">&nbsp&nbsp|&nbsp&nbsp<a href data-toggle="modal" class="a1" data-target="#password">Change Password</a></span>&nbsp&nbsp|&nbsp&nbsp
+                    <span class="text-right">Logout</span>
+                </div>
+            </div>
         </div>
         <div class="panel-body">
             <div class="row">
-                <form class="form-inline" role="form">
-                    <div class="form-group">
-                        <label>Project Title</label>
-                        <input type="name" class="form-control" ng-model="project.title" id="name" placeholder="Enter name">
-                    </div>
-                    <div class="form-group">
-                        <label>Project Database</label>
-                        <select class="form-control" ng-model="project.db" ng-click="fire()">
-                            <option value="firebase">Firebase</option>
-                            <option value="mongo">MongoDB</option>
-                        </select>
-                    </div>
-                    <button type="submit" ng-disabled="!project.db" ng-click="createProject(project)" class="btn btn-default">Create</button>
-                </form>
+                <div class="col-md-8 col-sm-offset-2">
+                    <form class="form-inline" role="form">
+                        <div class="form-group">
+                            <label>Project Title:</label>
+                            <input type="name" class="form-control" ng-model="project.title" id="name" placeholder="Enter name">
+                        </div>
+                        <div class="form-group">
+                            <label>Select Data Store:</label>
+                            <select class="form-control" ng-model="project.db" ng-change="fire()">
+                                <option></option>
+                                <option value="firebase">Firebase</option>
+                                <option value="MongoDB">MongoDB</option>
+                            </select>
+                        </div>
+                        <button type="submit" ng-disabled="!project.db" ng-click="createProject(project)" class="btn btn-default">Create New Project</button>
+                    </form>
+                </div>
             </div>
+            <br>
             <div class="row">
                 <div class="table-responsive">
-
                     <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Project Name</th>
-                                <th></th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="p in projectList">
-                                <td>{{$index+1}}</td>
-                                <td>
+                        <!-- ------------------ -->
+                        <div class="col-md-12">
+                            <div class="panel pan panel-info pan-collapsed" ng-repeat="p in projectList">
+                                <div class="panel-heading ph clickable1 text-center">
+                                    <h1 class="panel-title .h1">{{p.title}}:&nbsp{{p.datasource}}</h1>
+                                </div>
+                                <div class="panel-body pb">
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <span class="pull-left">
-                                        {{p.title}}({{p.datasource}})</span>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <button class="btn btn-default" ng-click="sdk(p)">Download SDK</button>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="panel rp panel-info panel-collapsed">
-                                                <div class="panel-heading rh clickable">
+                                                <div class="panel-heading rh clickable text-center">
                                                     <h3 class="panel-title">Roles</h3>
                                                 </div>
                                                 <div class="panel-body rb">
+                                                    <div class="row">
+                                                        <div class="col-sm-8">
+                                                            <input type="text" class="form-control" ng-model="role">
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <button class="btn btn-default" ng-click="addRole(role,p)">add Role</button>
+                                                        </div>
+                                                    </div>
+                                                    <br>
                                                     <ul class="list-group" ng-repeat="(r,value) in proles(p)">
                                                         <li class="list-group-item">
-                                                            <span> {{value}}</span>
-                                                            <button ng-if="value!=='guest'" class="glyphicon glyphicon-remove btn btn-sm btn-default pull-right" ng-click="rmRole(value,p)"></button>
-                                                            </li>
+                                                            <div class="row">
+                                                                <div class="col-md-9">
+                                                                    <input type='checkbox' class='ios8-switch ios8-switch-sm' id='checkbox-{{$index}}' ng-model="p.roles[value]" ng-change="dev(p,value,p.roles[value])">
+                                                                    <label for='checkbox-{{$index}}'>{{value}}: <span ng-if="p.roles[value]">Development</span><span ng-if="!p.roles[value]">Production</span></label>
+                                                                </div>
+                                                                <div class="col-md-3 pull-right">
+                                                                    <button ng-if="value!=='guest'" class="glyphicon glyphicon-remove btn btn-sm btn-default pull-right" ng-click="rmRole(value,p)"></button>
+                                                                </div>
+                                                            </div>
+                                                        </li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="panel rp panel-info panel-collapsed">
-                                                <div class="panel-heading rh clickable">
+                                                <div class="panel-heading rh clickable text-center">
                                                     <h3 class="panel-title">Plugins</h3>
                                                 </div>
-                                                <div class="panel-body rb"><ul class="list-group" ng-repeat="pl in plugins">
-                                                        <li class="list-group-item"> <input type="checkbox" ng-model="pl.bool"ng-true-value="'true'" ng-change="addplugin(pl)">{{pl.title}}</li>
-                                                    </ul></div>
+                                                <div class="panel-body rb">
+                                                    <ul class="list-group" ng-repeat="pl in plugins">
+                                                        <li class="list-group-item">
+                                                            <input type='checkbox' class='ios8-switch ios8-switch-sm' id='checkbox-{{$index}}-p' ng-model="pl.bool" ng-true-value="'true'" ng-change="addplugin(pl)">
+                                                            <label for='checkbox-{{$index}}-p'>{{pl.title}} </label>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="panel rp panel-info panel-collapsed">
+                                                <div class="panel-heading rh clickable text-center">
+                                                    <h3 class="panel-title">SDKs</h3>
+                                                </div>
+                                                <div class="panel-body rb">
+                                                    <ul class="list-group">
+                                                        <li class="list-group-item">
+                                                            <button type="button" class="btn btn-default btn-sm" ng-click="sdk(p)">
+                                                                <span class="glyphicon glyphicon-cloud-download"></span> Download Angular SDK
+                                                            </button>
+                                                         </li>
+                                                        <li class="list-group-item">
+                                                            <button type="button" class="btn btn-default btn-sm" ng-click="sdk(p)">
+                                                                <span class="glyphicon glyphicon-cloud-download"></span> Download NodeJS SDK
+                                                            </button>
+                                                        </li>
+                                                        <li class="list-group-item">
+                                                            <button type="button" class="btn btn-default btn-sm" ng-click="sdk(p)">
+                                                                <span class="glyphicon glyphicon-cloud-download"></span> Download JS SDK
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </td>
-                                <td>
-                                    <div class=".col-sm-12">
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <input type="text" class="form-control" ng-model="role">
-                                                <button class="btn btn-default" ng-click="addRole(role,p)">add</button>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <ul ng-repeat="(r,value) in proles(p)">
-                                                <li><a href ng-click="prmpt(p,value)"><strong class="tab-space">{{value}}</strong>&nbsp&nbsp&nbsp&nbsp</a><strong>&nbsp&nbsp&nbsp&nbsp<input type="checkbox" ng-model="p.roles[value]" ng-change="dev(p,value,p.roles[value])">Development &nbsp&nbsp&nbsp </strong></li>
-                                            </ul>
-                                        </div>
-
-                                        <br>
-                                    </div>
-                                </td>
-
-                            </tr>
-                        </tbody>
-                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ------------------- -->
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="password" tabindex="-1" role="dialog" aria-labelledby="smallModal" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Change Password</h4>
+            </div>
+            <div class="modal-body">
+            <em ng-show="no">Password Unable To Change</em>
+                <form class="form-inline" role="form">
+                    <div class="form-group">
+                        <label>Old Password</label>
+                        <input type="password" class="form-control" ng-blur="onBlur(oldPassword)" ng-model="oldPassword" id="name">
+                    </div>
+                    <em ng-show="wrong">Password Wrong</em>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" class="form-control" ng-model="pass1" id="name">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" class="form-control" ng-model="pass2" ng-blur="match(pass1,pass2)"  id="name">
+                    </div>
+                    <em ng-show="correct">Password Not Matched</em>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-disabled="!save" ng-click="changePass(pass1)">Save changes</button>
             </div>
         </div>
     </div>
